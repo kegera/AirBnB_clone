@@ -6,7 +6,7 @@ This project is a part of the AirBnB clone series and focuses on building a **co
 
 **## Project Details**
 
-- **Team:** **Caleb Kegera**
+- **Team:**Caleb Kegera**
 - **John Mwanyasi**
 - **Project Start:** October 9, 2023, 6:00 AM
 - **Project End:** October 16, 2023, 6:00 AM
@@ -82,12 +82,6 @@ Once the console is running, you can use the following commands:
 - Deleting a User object:
 (hbnb) destroy User <user_id>
 
-**## Contributors**
-
-
-**## Contributors**
-
-
 
 **## Authors**
 
@@ -108,5 +102,3 @@ To generate the list of authors in your Git repository, you can use the followin
 git shortlog -se | perl -spe 's/^\s+\d+\s+//' | sed -e '/^CommitSyncScript.*$/d' > AUTHORS
 
 Please see the [AUTHORS](AUTHORS) file for a list of contributors to this project.
-
-
