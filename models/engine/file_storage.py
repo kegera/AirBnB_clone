@@ -28,6 +28,7 @@ class FileStorage:
             json.dump(jsondata, jsonfile)
 
     def reload(self):
+        self.__objects = {}
         class_list = {
                 'BaseModel': BaseModel,
                 'User': User,
