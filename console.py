@@ -68,8 +68,8 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
         models.storage.reload()
-        objs = models.storage.all().get(obj_key)
         obj_key = nme + "." + argsid
+        objs = models.storage.all().get(obj_key)
         if (obj_key in objs):
             print(objs)
         else:
@@ -120,7 +120,7 @@ class HBNBCommand(cmd.Cmd):
         c = 0
         obj_dict = models.storage.all()
         for k in obj_dict:
-            if (arg in k):
+            if arg == k.split(".")[0]:
                 c += 1
         print(c)
 
@@ -163,7 +163,7 @@ class HBNBCommand(cmd.Cmd):
         y_dict = {
                 "count": self.do_count,
                 "all": self.do_all,
-                "destory": self.do_destroy,
+                "destroy": self.do_destroy,
                 "show": self.do_show,
                 "update": self.do_update
                 }
@@ -192,7 +192,7 @@ class HBNBCommand(cmd.Cmd):
         except IndexError:
             inp = ""
             ln = ""
-            ln = cl_name + l
+            ln = cl_name + ln
             if (cmds in y_dict.keys()):
                 y_dict[cmds](ln.strip())
 
