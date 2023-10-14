@@ -32,6 +32,7 @@ class HBNBCommand(cmd.Cmd):
     def do_quit(self, arg):
         """quit the program"""
         return True
+
     def do_nothing(self, arg):
         """no change"""
         pass
@@ -174,27 +175,28 @@ class HBNBCommand(cmd.Cmd):
             return
         cl_name = v[0]
         cmds = v[1].split("(")[0]
-        l = ""
+        ln = ""
         if (cmds == "update" and v[1].split("(")[1][-2] == "}"):
             inp = v[1].split("(").split(",", 1)
             inp[0] = shlex.split(inp[0])[0]
-            l = "".join(inp)[0:-1]
-            l = cl_name + " " + l
-            delf.do_update(l.strip())
+            ln = "".join(inp)[0:-1]
+            ln = cl_name + " " + ln
+            delf.do_update(ln.strip())
             return
         try:
             inp = v[1].split("(")[1].split(",")
             for n in range(len(inp)):
-                if (n != len(inp) -1):
-                    l = l + " " + shlex.split(inp[n])[0]
+                if (n != len(inp) - 1):
+                    ln = ln + " " + shlex.split(inp[n])[0]
                 else:
-                    l = l + " " + shlex.split(inp[n][0:-1])[0]
+                    ln = ln + " " + shlex.split(inp[n][0:-1])[0]
         except IndexError:
             inp = ""
-            l = ""
-            l = cl_name + l
+            ln = ""
+            ln = cl_name + l
             if (cmds in y_dict.keys()):
-                y_dict[cmds](l.strip())
+                y_dict[cmds](ln.strip())
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
