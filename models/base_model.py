@@ -6,7 +6,11 @@ import models
 
 
 class BaseModel:
+    """
+    initialization of class BaseModel
+    """
     def __init__(self, *args, **kwargs):
+        """initialization"""
         if kwargs:
             for k, v in kwargs.items():
                 if k == '__class__':
@@ -21,13 +25,19 @@ class BaseModel:
             models.storage.new(self)
 
     def __str__(self):
+        """return string representation of BaseModel"""
         return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
+        """
+        updates public instance attribute updated_at
+        with current datetime
+        """
         self.updated_at = datetime.now()
         models.storage.save()
 
     def to_dict(self):
+        """returns a dictionary containing key value pairs of __dict_"""
         obj_dict = self.__dict__.copy()
         obj_dict['__class__'] = self.__class__.__name__
         obj_dict['created_at'] = self.created_at.isoformat()
