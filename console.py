@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+"""Defines AirBnB console"""
 import cmd
 from models.base_model import BaseModel
 import models
@@ -33,10 +34,6 @@ class HBNBCommand(cmd.Cmd):
         """quit the program"""
         return True
 
-    def do_nothing(self, arg):
-        """no change"""
-        pass
-
     def do_EOF(self, arg):
         """exit program upon end of file"""
         print("")
@@ -46,33 +43,35 @@ class HBNBCommand(cmd.Cmd):
         """new instance of BaseModel"""
         if not arg:
             print("** class name missing **")
-            return
         x_data = shlex.split(arg)
         if (x_data[0] not in HBNBCommand.mods.keys()):
             print("** class doesn't exist **")
-            return
         base_instance = HBNBCommand.mods[x_data[0]]()
-        base_instance.save()
+        models.storage.save()
         print(base_instance.id)
 
     def do_show(self, arg):
         """display the string representation"""
         args = shlex.split(arg)
-        if (len(args) == 0):
+        nme, argsid = None, None
+        if (len(args) > 0):
+            nme = args[0]
+        if len(args) > 1:
+            argsid = args[1]
+        if not nme:
             print("** class name missing **")
-            return
-        if (args[0] not in HBNBCommand.mods.keys()):
+        elif not argsid:
+            print("** instance id missing **")
+        elif (args[0] not in HBNBCommand.mods.keys()):
             print("** class doesn't exist **")
-            return
         if (len(args) <= 1):
             print("** instance id missing **")
             return
         models.storage.reload()
-        objs = models.storage.all()
-        obj_key = args[0] + "." + args[1]
+        objs = models.storage.all().get(obj_key)
+        obj_key = nme + "." + argsid
         if (obj_key in objs):
-            insts = str(objs[obj_key])
-            print(insts)
+            print(objs)
         else:
             print("** no instance found **")
 
