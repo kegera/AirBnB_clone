@@ -53,7 +53,22 @@ class HBNBCommand(cmd.Cmd):
     def do_show(self, arg):
         """display the string representation"""
         args = arg.split()
-        nme, argsid = None, None
+        if len(args) == 0:
+            print("** class name missing **")
+        elif args[0] not in HBNBCommand.mods:
+            print("** class doesn't exist **")
+        elif len(args) == 1:
+            print("** instance id missing **")
+        models.storage.reload()
+        args_dict = models.storage.all()
+        args_key = args[0] + "." + args[1]
+        if args_key in args_dict:
+            args_inst = str(args_dict[args_key])
+            print(args_inst)
+        else:
+            print("** no instance found **")
+            
+        """nme, argsid = None, None
         if (len(args) > 0):
             nme = args[0]
         if len(args) > 1:
@@ -71,7 +86,7 @@ class HBNBCommand(cmd.Cmd):
             if (obj_key in objs):
                 print(objs)
             else:
-                print("** no instance found **")
+                print("** no instance found **") """
 
     def do_destroy(self, arg):
         """delete a specific instance"""
@@ -79,10 +94,10 @@ class HBNBCommand(cmd.Cmd):
         if (len(args) == 0):
             print("** class name missing **")
             return
-        if (args[0] not in HBNBCommand.mods.keys()):
+        if (args[0] not in HBNBCommand.mods):
             print("** class doesn't exist **")
             return
-        if (len(args) <= 1):
+        if (len(args) == 1):
             print("** instance id missing **")
             return
         models.storage.reload()
@@ -96,7 +111,18 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, arg):
         """display all instances"""
-        jfile = []
+        args = shlex.split(arg)
+        if len(args) > 0 and args[0] not in HBNBCommand.mods:
+            print("** class doesn't exist **")
+        else:
+            jfile = []
+            for obj in models.storage.all():
+                if len(args) > 0 and args[0] == obj.__class__.__name__:
+                    jfile.append(obj.__str__())
+                elif len(args) == 0:
+                    jfile.append(obj.__str__())
+            print(jfile)
+        """jfile = []
         args = shlex.split(arg)
         models.storage.reload()
         obj_dict = models.storage.all()
@@ -111,7 +137,7 @@ class HBNBCommand(cmd.Cmd):
                     jfile.append(str(obj_dict[k]))
             print(json.dumps(jfile))
         else:
-            print("** class doesn't exist **")
+            print("** class doesn't exist **")"""
 
     def do_count(self, arg):
         """counts how many instances a class has"""
@@ -124,13 +150,13 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, arg):
         """update an isntance"""
+        args = shlex.split(arg)
         models.storage.reload()
         obj_dict = models.storage.all()
-        if not arg:
+        if not args:
             print("** class name missing **")
             return
-        args = shlex.split(arg)
-        if (args[0] not in HBNBCommand.mods.keys()):
+        if (args[0] not in HBNBCommand.mods):
             print("** class doesn't exist **")
             return
         if (len(args) == 1):
@@ -165,34 +191,20 @@ class HBNBCommand(cmd.Cmd):
                 "show": self.do_show,
                 "update": self.do_update
                 }
-        args = arg.strip()
-        v = arg.split(".")
-        if (len(v) != 2):
+        args = arg.strip().split(".")
+        if (len(args) != 2):
             cmd.Cmd.default(self, arg)
             return
-        cl_name = v[0]
-        cmds = v[1].split("(")[0]
-        ln = ""
-        if (cmds == "update" and v[1].split("(")[1][-2] == "}"):
-            inp = v[1].split("(").split(",", 1)
-            inp[0] = shlex.split(inp[0])[0]
-            ln = "".join(inp)[0:-1]
-            ln = cl_name + " " + ln
-            delf.do_update(ln.strip())
-            return
-        try:
-            inp = v[1].split("(")[1].split(",")
-            for n in range(len(inp)):
-                if (n != len(inp) - 1):
-                    ln = ln + " " + shlex.split(inp[n])[0]
-                else:
-                    ln = ln + " " + shlex.split(inp[n][0:-1])[0]
-        except IndexError:
-            inp = ""
-            ln = ""
-            ln = cl_name + ln
-            if (cmds in y_dict.keys()):
-                y_dict[cmds](ln.strip())
+        cl_name, cmds = args
+        cmds, params = cmds.split("(", 1)
+        if cmds == "update" and params.endswith("}"):
+            params = params[:-1]
+        elif cmds in y_dict:
+            if cmds in ["all", "count"]:
+                cl_name = cl_name if cmds == "all" else ""
+            y_dict[cmds](f"{cl_name} {params}")
+        else:
+            cmd.Cmd.default(self, arg)
 
 
 if __name__ == '__main__':

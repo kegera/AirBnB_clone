@@ -42,9 +42,9 @@ class FileStorage:
         try:
             with open(self.__file_path, 'r', encoding='utf-8') as jsonfile:
                 jsondata = json.load(jsonfile)
-                for key, value in jsondata.items():
-                    class_name, obj_id = key.split(".")
-                    self.__objects[key] = globals()[class_name](**value)
+            for key, value in jsondata.items():
+                class_name, obj_id = key.split(".")
+                self.__objects[key] = globals()[class_name](**value)
         except FileNotFoundError:
             pass
 
