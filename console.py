@@ -52,7 +52,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, arg):
         """display the string representation"""
-        args = shlex.split(arg)
+        args = arg.split()
         nme, argsid = None, None
         if (len(args) > 0):
             nme = args[0]
@@ -64,16 +64,14 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
         elif (args[0] not in HBNBCommand.mods.keys()):
             print("** class doesn't exist **")
-        if (len(args) <= 1):
-            print("** instance id missing **")
-            return
-        models.storage.reload()
-        obj_key = nme + "." + argsid
-        objs = models.storage.all().get(obj_key)
-        if (obj_key in objs):
-            print(objs)
         else:
-            print("** no instance found **")
+            models.storage.reload()
+            obj_key = nme + "." + argsid
+            objs = models.storage.all().get(obj_key)
+            if (obj_key in objs):
+                print(objs)
+            else:
+                print("** no instance found **")
 
     def do_destroy(self, arg):
         """delete a specific instance"""
