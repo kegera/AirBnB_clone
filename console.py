@@ -24,7 +24,7 @@ class HBNBCommand(cmd.Cmd):
             "Place": Place,
             "Review": Review
         }
-    prompt = "(hbnb)"
+    prompt = "(hbnb) "
 
     def emptyline(self):
         """empty line"""
@@ -88,7 +88,7 @@ class HBNBCommand(cmd.Cmd):
         args = shlex.split(arg)
         obj_dict = models.storage.all().values()
         for k in obj_dict:
-            if arg[0] == k.__class__.__name__:
+            if args[0] == k.__class__.__name__:
                 c += 1
         print(c)
 
