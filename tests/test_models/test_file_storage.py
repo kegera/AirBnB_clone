@@ -42,3 +42,22 @@ class test_filestorage(unittest.Testcase):
             os.remove('file.json')
         except Exception:
             pass
+
+    def test_create_storage(self):
+        from models.engine.file_storage import FileStorage
+        print(type(storage))
+        self.assertEqual(type(models.storage), FileStorage)
+
+    def test_dict(self):
+        self.assertEqual(type(models.storage.all()), dict)
+
+    def test_pathtype(self):
+        self.assertEqual(type(models.storage._FileStorage__file_path), str)
+
+    def test_reload(self):
+        x = BaseModel()
+        models.storage.save()
+        models.storage.reload()
+        for item in models.storage.all().values():
+            ld = item
+            self.assertEqual(x.to_dict()['id'], ld.to_dict()['id'])
