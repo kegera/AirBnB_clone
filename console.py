@@ -15,7 +15,6 @@ import shlex
 
 
 class HBNBCommand(cmd.Cmd):
-    prompt = "(hbnb)"
     mods = {
             "BaseModel": BaseModel,
             "User": User,
@@ -24,7 +23,8 @@ class HBNBCommand(cmd.Cmd):
             "Amenity": Amenity,
             "Place": Place,
             "Review": Review
-            }
+        }
+    prompt = "(hbnb)"
 
     def emptyline(self):
         """empty line"""
@@ -41,10 +41,10 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, arg):
         """new instance of BaseModel"""
-        if not arg:
-            print("** class name missing **")
         x_data = shlex.split(arg)
-        if (x_data[0] not in HBNBCommand.mods.keys()):
+        if not x_data:
+            print("** class name missing **")
+        elif (x_data[0] not in HBNBCommand.mods):
             print("** class doesn't exist **")
         base_instance = HBNBCommand.mods[x_data[0]]()
         models.storage.save()
@@ -68,47 +68,6 @@ class HBNBCommand(cmd.Cmd):
         else:
             print("** no instance found **")
             
-        """nme, argsid = None, None
-        if (len(args) > 0):
-            nme = args[0]
-        if len(args) > 1:
-            argsid = args[1]
-        if not nme:
-            print("** class name missing **")
-        elif not argsid:
-            print("** instance id missing **")
-        elif (args[0] not in HBNBCommand.mods.keys()):
-            print("** class doesn't exist **")
-        else:
-            models.storage.reload()
-            obj_key = nme + "." + argsid
-            objs = models.storage.all().get(obj_key)
-            if (obj_key in objs):
-                print(objs)
-            else:
-                print("** no instance found **") """
-
-    def do_destroy(self, arg):
-        """delete a specific instance"""
-        args = shlex.split(arg)
-        if (len(args) == 0):
-            print("** class name missing **")
-            return
-        if (args[0] not in HBNBCommand.mods):
-            print("** class doesn't exist **")
-            return
-        if (len(args) == 1):
-            print("** instance id missing **")
-            return
-        models.storage.reload()
-        objs = models.storage.all()
-        obj_key = args[0] + "." + args[1]
-        if (obj_key in objs):
-            del objs[obj_key]
-            models.storage.save()
-        else:
-            print("** no instance found **")
-
     def do_all(self, arg):
         """display all instances"""
         args = shlex.split(arg)
@@ -116,35 +75,20 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         else:
             jfile = []
-            for obj in models.storage.all():
-                if len(args) > 0 and args[0] == obj.__class__.__name__:
-                    jfile.append(obj.__str__())
+            for items in models.storage.all().values():
+                if len(args) > 0 and args[0] == items.__class__.__name__:
+                    jfile.append(items.__str__())
                 elif len(args) == 0:
-                    jfile.append(obj.__str__())
+                    jfile.append(items.__str__())
             print(jfile)
-        """jfile = []
-        args = shlex.split(arg)
-        models.storage.reload()
-        obj_dict = models.storage.all()
-        if not arg:
-            for k in obj_dict:
-                jfile.append(str(obj_dict[k]))
-            print(json.dumps(jfile))
-            return
-        if (args[0] in HBNBCommand.mods.keys()):
-            for k in obj_dict:
-                if args[0] not in k:
-                    jfile.append(str(obj_dict[k]))
-            print(json.dumps(jfile))
-        else:
-            print("** class doesn't exist **")"""
 
     def do_count(self, arg):
         """counts how many instances a class has"""
         c = 0
-        obj_dict = models.storage.all()
+        args = shlex.split(arg)
+        obj_dict = models.storage.all().values()
         for k in obj_dict:
-            if arg == k.split(".")[0]:
+            if arg[0] == k.__class__.__name__:
                 c += 1
         print(c)
 
@@ -181,6 +125,23 @@ class HBNBCommand(cmd.Cmd):
         else:
             setattr(obj_dict[obj_key], args[2], args[3])
         models.storage.save()
+
+    def do_destroy(self, arg):
+        """deletes an instance"""
+        args = shlex.split(arg)
+        args_dict = models.storage.all()
+
+        if not args:
+            print("** class name missing **")
+        elif args[0] not in HBNBCommand.mods:
+            print("** class doesn't exist **")
+        elif len(args) == 1:
+            print("** instance id missing **")
+        elif f"{args[0]}.{args[1]}" not in args_dict.keys():
+            print("** no instance found **")
+        else:
+            del args_dict[f"{args[0]}.{args[1]}"]
+            models.storage.save()
 
     def default(self, arg):
         """more ways of data input"""
